@@ -1,0 +1,11 @@
+[package]
+name = "gtk-markdown-viewer"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+gtk4 = "0.9"
+gio = "0.19"
+glib = "0.19"
+sourceview5 = "0.9"
+pulldown-cmark = "0.10"
