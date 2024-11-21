@@ -1,13 +1,12 @@
 use gtk4::prelude::*;
 use gtk4::{Application, ApplicationWindow, Box, HeaderBar, MenuButton, Orientation, Paned};
-use gtk4::glib;
-use gtk4::gio;
+use gtk4::{glib, gio};
 use pulldown_cmark::{html, Options, Parser};
 use sourceview5::{prelude::*, View as SourceView, Buffer as SourceBuffer};
 
 fn main() {
     let app = Application::builder()
-        .application_id("com.example.GtkMarkdownViewer")
+        .application_id("com.example.MarkVue")
         .build();
 
     app.connect_activate(build_ui);
@@ -17,7 +16,7 @@ fn main() {
 fn build_ui(app: &Application) {
     let window = ApplicationWindow::builder()
         .application(app)
-        .title("GTK Markdown Viewer")
+        .title("MarkVue")
         .default_width(800)
         .default_height(600)
         .build();
@@ -71,11 +70,11 @@ fn build_ui(app: &Application) {
         let about_dialog = gtk4::AboutDialog::builder()
             .transient_for(&window)
             .modal(true)
-            .program_name("GTK Markdown Viewer")
+            .program_name("MarkVue")
             .version("1.0")
-            .authors(vec!["Your Name".into()])
-            .website("https://example.com")
-            .website_label("Website")
+            .authors(&vec!["Vaibhav Pratap Singh"])
+            .website("https://github.com/v8v88v8v88/MarkVue")
+            .website_label("GitHub Repository")
             .build();
         about_dialog.present();
     }));
