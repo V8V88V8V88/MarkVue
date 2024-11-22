@@ -14,15 +14,19 @@ MarkVue is a sleek, GTK-based Markdown viewer that allows you to write Markdown 
 To install MarkVue, you'll need Rust and Cargo installed on your system. Then, follow these steps:
 
 1. Clone the repository:
-   ```
+   ```bash
    git clone https://github.com/v8v88v8v88/markvue.git
    cd markvue
    ```
 
 2. Build and run the application:
-   ```
+   ```bash
    cargo run
    ```
+
+3. Open the `MarkVue` project:
+   - Open the project directory where you cloned the repository.
+   - Navigate to `src/main.rs` to modify the application code or add new features.
 
 ## Dependencies
 
