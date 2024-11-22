@@ -1,6 +1,7 @@
+use std::rc::Rc;
 use gtk4::prelude::*;
 use gtk4::{Application, ApplicationWindow, Box, HeaderBar, MenuButton, Orientation, Paned};
-use gtk4::{glib, gio};
+use gtk4::{gio};
 use pulldown_cmark::{html, Options, Parser};
 use sourceview5::{prelude::*, View as SourceView, Buffer as SourceBuffer};
 
@@ -8,49 +9,55 @@ fn main() {
     let app = Application::builder()
         .application_id("com.example.MarkVue")
         .build();
-    
+
     app.connect_activate(build_ui);
     app.run();
 }
 
 fn build_ui(app: &Application) {
-    let window = ApplicationWindow::builder()
-        .application(app)  
-        .default_width(800)
-        .default_height(600)
-        .build();
-    
+    let window = Rc::new(
+        ApplicationWindow::builder()
+            .application(app)
+            .default_width(800)
+            .default_height(600)
+            .build(),
+    );
+
     let header_bar = HeaderBar::new();
     let menu_button = MenuButton::builder()
         .icon_name("open-menu-symbolic")
         .build();
     header_bar.pack_end(&menu_button);
-    
+
     let paned = Paned::new(Orientation::Horizontal);
     paned.set_wide_handle(true);
-    
+
     let source_view = SourceView::new();
-    let source_buffer = source_view.buffer().downcast::<SourceBuffer>().unwrap();
-    source_buffer.set_language(Some(&sourceview5::LanguageManager::default().language("markdown").unwrap()));
+    let source_buffer = source_view
+        .buffer()
+        .downcast::<SourceBuffer>()
+        .unwrap();
+    source_buffer.set_language(Some(
+        &sourceview5::LanguageManager::default().language("markdown").unwrap(),
+    ));
     source_buffer.set_highlight_syntax(true);
     source_view.set_show_line_numbers(true);
     source_view.set_monospace(true);
-    
+
     let markdown_view = gtk4::TextView::new();
     markdown_view.set_editable(false);
     markdown_view.set_wrap_mode(gtk4::WrapMode::Word);
-    
+
     paned.set_start_child(Some(&source_view));
     paned.set_end_child(Some(&markdown_view));
-    
+
     let vbox = Box::new(Orientation::Vertical, 0);
     vbox.append(&header_bar);
     vbox.append(&paned);
-    
+
     window.set_child(Some(&vbox));
-    
-    // Use closure with direct reference handling
-    let markdown_buffer = markdown_view.buffer(); // No argument needed for WeakRef
+
+    let markdown_buffer = markdown_view.buffer();
     source_buffer.connect_changed(move |buffer| {
         let text = buffer.text(&buffer.start_iter(), &buffer.end_iter(), false);
         let parser = Parser::new_ext(&text, Options::all());
@@ -58,22 +65,17 @@ fn build_ui(app: &Application) {
         html::push_html(&mut html_output, parser);
         markdown_buffer.set_text(&html_output);
     });
-    
-    // Create menu
+
     let menu = gio::Menu::new();
     menu.append(Some("About"), Some("app.about"));
     menu.append(Some("Quit"), Some("app.quit"));
     menu_button.set_menu_model(Some(&menu));
-    
-    // Add actions
+
+    let about_window = Rc::clone(&window);
     let about_action = gio::SimpleAction::new("about", None);
-    
-    // Use closure with direct reference handling
-    let window = window.clone(); // Clone the window for the closure
     about_action.connect_activate(move |_, _| {
-        
         let about_dialog = gtk4::AboutDialog::builder()
-            .transient_for(&window)
+            .transient_for(&*about_window) // Dereference `Rc` here
             .modal(true)
             .program_name("MarkVue")
             .version("1.0")
@@ -81,20 +83,17 @@ fn build_ui(app: &Application) {
             .website("https://github.com/v8v88v8v88/MarkVue")
             .website_label("GitHub Repository")
             .build();
-        
+
         about_dialog.present();
     });
-    
     app.add_action(&about_action);
-    
+
+    let quit_window = Rc::clone(&window);
     let quit_action = gio::SimpleAction::new("quit", None);
-    let window_weak = glib::WeakRef::new(); // No argument needed
     quit_action.connect_activate(move |_, _| {
-        let window: &gtk4::ApplicationWindow = window_weak.upgrade().unwrap();
-        window.close();
+        quit_window.close();
     });
-    
     app.add_action(&quit_action);
-    
+
     window.present();
 }
