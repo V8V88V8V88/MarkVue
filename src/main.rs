@@ -1,6 +1,6 @@
 use gtk4::prelude::*;
 use gtk4::{Application, ApplicationWindow, Box, HeaderBar, MenuButton, Orientation, Paned};
-use gtk4::{glib, gio};
+use gtk4::{gio, Settings};
 use pulldown_cmark::{html, Options, Parser};
 use sourceview5::{prelude::*, View as SourceView, Buffer as SourceBuffer};
 
@@ -8,7 +8,7 @@ fn main() {
     let app = Application::builder()
         .application_id("com.example.MarkVue")
         .build();
-    
+
     app.connect_activate(build_ui);
     app.run();
 }
@@ -20,6 +20,11 @@ fn build_ui(app: &Application) {
         .default_width(800)
         .default_height(600)
         .build();
+
+    // Set the GTK settings to remove the default focus outline
+    let settings = Settings::default().expect("Failed to get default settings");
+    settings.set_gtk_keynav_use_caret(false);
+    settings.set_gtk_error_bell(false);
 
     let header_bar = HeaderBar::new();
     let menu_button = MenuButton::builder()
@@ -91,4 +96,4 @@ fn build_ui(app: &Application) {
     app.add_action(&quit_action);
 
     window.present();
-}
+}/*  */
