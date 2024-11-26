@@ -8,7 +8,7 @@ fn main() {
     let app = Application::builder()
         .application_id("com.example.MarkVue")
         .build();
-
+    
     app.connect_activate(build_ui);
     app.run();
 }
@@ -26,7 +26,6 @@ fn build_ui(app: &Application) {
         .icon_name("open-menu-symbolic")
         .build();
     header_bar.pack_end(&menu_button);
-
     window.set_titlebar(Some(&header_bar));
 
     let paned = Paned::new(Orientation::Horizontal);
@@ -52,18 +51,16 @@ fn build_ui(app: &Application) {
 
     let vbox = Box::new(Orientation::Vertical, 0);
     vbox.append(&paned);
-
     window.set_child(Some(&vbox));
 
-    source_buffer.connect_changed(
-        glib::clone!(@weak markdown_view => move |buffer| {
-            let text = buffer.text(&buffer.start_iter(), &buffer.end_iter(), false);
-            let parser = Parser::new_ext(&text, Options::all());
-            let mut html_output = String::new();
-            html::push_html(&mut html_output, parser);
-            markdown_view.buffer().set_text(&html_output);
-        }),
-    );
+    let markdown_view_clone = markdown_view.clone();
+    source_buffer.connect_changed(move |buffer| {
+        let text = buffer.text(&buffer.start_iter(), &buffer.end_iter(), false);
+        let parser = Parser::new_ext(&text, Options::all());
+        let mut html_output = String::new();
+        html::push_html(&mut html_output, parser);
+        markdown_view_clone.buffer().set_text(&html_output);
+    });
 
     let menu = gio::Menu::new();
     menu.append(Some("About"), Some("app.about"));
@@ -71,28 +68,26 @@ fn build_ui(app: &Application) {
     menu_button.set_menu_model(Some(&menu));
 
     let about_action = gio::SimpleAction::new("about", None);
-    about_action.connect_activate(
-        glib::clone!(@weak window => move |_, _| {
-            let about_dialog = gtk4::AboutDialog::builder()
-                .transient_for(&window)
-                .modal(true)
-                .program_name("MarkVue")
-                .version("1.0")
-                .authors(["Your Name"])
-                .website("https://github.com/v8v88v8v88/MarkVue")
-                .website_label("GitHub Repository")
-                .build();
-            about_dialog.present();
-        }),
-    );
+    let window_clone = window.clone();
+    about_action.connect_activate(move |_, _| {
+        let about_dialog = gtk4::AboutDialog::builder()
+            .transient_for(&window_clone)
+            .modal(true)
+            .program_name("MarkVue")
+            .version("1.0")
+            .authors(["Your Name"])
+            .website("https://github.com/v8v88v8v88/MarkVue")
+            .website_label("GitHub Repository")
+            .build();
+        about_dialog.present();
+    });
     app.add_action(&about_action);
 
     let quit_action = gio::SimpleAction::new("quit", None);
-    quit_action.connect_activate(
-        glib::clone!(@weak window => move |_, _| {
-            window.close();
-        }),
-    );
+    let window_close_clone = window.clone();
+    quit_action.connect_activate(move |_, _| {
+        window_close_clone.close();
+    });
     app.add_action(&quit_action);
 
     window.present();
