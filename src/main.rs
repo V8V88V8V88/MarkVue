@@ -21,7 +21,6 @@ fn build_ui(app: &Application) {
         .default_height(600)
         .build();
 
-    // Set the GTK settings to remove the default focus outline
     let settings = Settings::default().expect("Failed to get default settings");
     settings.set_gtk_keynav_use_caret(false);
     settings.set_gtk_error_bell(false);
@@ -33,7 +32,7 @@ fn build_ui(app: &Application) {
     header_bar.pack_end(&menu_button);
     window.set_titlebar(Some(&header_bar));
 
-    let paned = Paned::new(Orientation::Horizontal);
+    let paned = Paned::new(Orientation::Vertical);
     paned.set_wide_handle(true);
 
     let source_view = SourceView::new();
