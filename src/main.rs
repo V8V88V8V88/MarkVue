@@ -4,15 +4,6 @@ use gtk4::{gio, Settings};
 use pulldown_cmark::{html, Options, Parser};
 use sourceview5::{prelude::*, View as SourceView, Buffer as SourceBuffer};
 
-fn main() {
-    let app = Application::builder()
-        .application_id("com.example.MarkVue")
-        .build();
-
-    app.connect_activate(build_ui);
-    app.run();
-}
-
 fn build_ui(app: &Application) {
     let window = ApplicationWindow::builder()
         .application(app)
@@ -32,11 +23,12 @@ fn build_ui(app: &Application) {
     header_bar.pack_end(&menu_button);
     window.set_titlebar(Some(&header_bar));
 
-    let paned = Paned::new(Orientation::Vertical);
-    paned.set_wide_handle(true);
+    let paned = Paned::builder()
+        .orientation(Orientation::Horizontal)
+        .build();
 
     let source_view = SourceView::new();
-    let source_buffer = source_view.buffer().downcast::<SourceBuffer>().unwrap();
+    let source_buffer: SourceBuffer = source_view.buffer().downcast().unwrap();
     source_buffer.set_language(Some(
         &sourceview5::LanguageManager::default()
             .language("markdown")
@@ -79,7 +71,7 @@ fn build_ui(app: &Application) {
             .modal(true)
             .program_name("MarkVue")
             .version("1.0")
-            .authors(["Your Name"])
+            .authors(vec!["Your Name"]) // Change this line
             .website("https://github.com/v8v88v8v88/MarkVue")
             .website_label("GitHub Repository")
             .build();
@@ -95,4 +87,13 @@ fn build_ui(app: &Application) {
     app.add_action(&quit_action);
 
     window.present();
-}/*  */
+}
+
+fn main() {
+    let app = Application::builder()
+        .application_id("com.example.MarkVue")
+        .build();
+
+    app.connect_activate(build_ui);
+    app.run();
+}
