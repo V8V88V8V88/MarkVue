@@ -24,7 +24,7 @@ fn build_ui(app: &Application) {
     window.set_titlebar(Some(&header_bar));
 
     let paned = Paned::builder()
-        .orientation(Orientation::Horizontal)
+        .orientation(Orientation::Vertical)
         .build();
 
     let source_view = SourceView::new();
@@ -47,7 +47,7 @@ fn build_ui(app: &Application) {
 
     let vbox = Box::new(Orientation::Vertical, 0);
     vbox.append(&paned);
-    window.set_child(Some(&vbox));
+    window.set_child(Some (&vbox));
 
     let markdown_view_clone = markdown_view.clone();
     source_buffer.connect_changed(move |buffer| {
@@ -71,7 +71,7 @@ fn build_ui(app: &Application) {
             .modal(true)
             .program_name("MarkVue")
             .version("1.0")
-            .authors(vec!["Your Name"]) // Change this line
+            .authors(vec!["Vaibhav Pratap Singh"]) 
             .website("https://github.com/v8v88v8v88/MarkVue")
             .website_label("GitHub Repository")
             .build();
