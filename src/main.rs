@@ -97,3 +97,11 @@ fn main() {
     app.connect_activate(build_ui);
     app.run();
 }
+
+let settings = match Settings::default() {
+    Some(settings) => settings,
+    None => {
+        eprintln!("Failed to get default settings. Exiting.");
+        std::process::exit(1);
+    }
+};
