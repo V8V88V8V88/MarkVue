@@ -54,8 +54,3 @@ GPL v2 License - see [LICENSE](LICENSE) file for details.
 ## Author
 
 [v8v88v8v88](https://github.com/v8v88v8v88)
-
-## Acknowledgments
-
-- GTK Project
-- Rust Community
