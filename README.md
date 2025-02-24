@@ -49,7 +49,7 @@ Contributions are welcome! Submit a Pull Request.
 
 ## License
 
-MIT License - see [LICENSE](LICENSE) file for details.
+GPL v2 License - see [LICENSE](LICENSE) file for details.
 
 ## Author
 
